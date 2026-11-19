@@ -16,7 +16,7 @@ if (controls && scenes.length > 1) {
     toggle.textContent = paused ? 'Play' : 'Pause';
     toggle.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
     status.setAttribute('aria-live', paused ? 'polite' : 'off');
-    if (!paused && !document.hidden) timer = setTimeout(() => show(1), 3000);
+    if (!paused && !document.hidden) timer = setTimeout(() => show(1), 5000);
   }
   function show(step) {
     if (animation) animation.cancel();
