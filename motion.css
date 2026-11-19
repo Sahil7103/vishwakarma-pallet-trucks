@@ -1,0 +1,38 @@
+.showcase{position:relative;overflow:hidden;border-radius:12px;min-height:590px;background:#182f29;color:#fff;isolation:isolate}
+.scene,.scene img{position:absolute;inset:0;width:100%;height:100%}
+.scene img{object-fit:cover}
+.scene-copy{position:absolute;inset:auto 0 0;padding:100px 32px 78px;background:linear-gradient(transparent,rgba(10,24,19,.88) 55%,#0a1813)}
+.scene-copy h2{font-size:clamp(29px,3vw,48px);letter-spacing:-1.4px}
+.scene-copy p{max-width:39ch;margin:12px 0 16px;font-size:14px;line-height:1.55;color:#e1e8dc}
+.scene-copy a{font-size:13px;text-decoration:underline;text-underline-offset:4px}
+.scene-controls{position:absolute;right:24px;bottom:20px;display:flex;gap:12px;align-items:center}
+.scene-controls button{background:transparent;color:white;border:1px solid #ffffff70;border-radius:50%;width:40px;height:40px;font-size:18px}
+.scene-controls button:hover{background:#ffffff25}
+.scene-controls output{font:12px monospace}
+@media(prefers-reduced-motion:no-preference){
+.scene img{animation:scene-pan 1.15s ease-out both}
+.scene-copy h2,.scene-copy p,.hero-copy h1,.catalog-intro h1,.detail-copy h1{animation:text-rise .7s ease-out both}
+.scene-copy p{animation-delay:.10s}
+@keyframes scene-pan{from{opacity:.45;transform:perspective(1200px) scale(1.06) rotateY(1deg)}to{opacity:1;transform:none}}
+@keyframes text-rise{from{opacity:0;clip-path:inset(0 0 100%);transform:translateY(16px)}to{opacity:1;clip-path:inset(0);transform:none}}
+}
+@media(max-width:700px){.showcase{width:100%;min-height:440px}.scene-copy{padding-inline:20px}}
+
+.scene-controls{z-index:2}.scene-controls button:first-child{width:auto;padding:0 12px;border-radius:20px;font-size:12px}.showcase .scene img{animation:none}
+
+@media (max-width:700px) {
+  .hero-copy,.contact > *, .detail-grid > *, .fields > * {min-width:0}
+  header .menu,.scene-controls button,.catalog-filters button {min-height:44px;min-width:44px}
+  .showcase {min-height:clamp(360px,105vw,460px)}
+  .scene-controls {right:16px;bottom:14px;gap:8px}
+  .scene-copy {padding:85px 20px 72px}
+  .hero-copy h1 {font-size:clamp(44px,11vw,66px)}
+  .breadcrumbs {flex-direction:row;align-items:center}
+  .product-photo-link {height:clamp(240px,73vw,360px)}
+  footer {padding-bottom:82px}
+}
+@media (max-width:520px) {
+  .contact .fields {grid-template-columns:minmax(0,1fr)}
+  .contact :is(input,select,textarea) {width:100%;min-height:44px;font-size:16px}
+  .contact form {padding:clamp(16px,5vw,24px)}
+}
