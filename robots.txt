@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://sahil7103.github.io/vishwakarma-pallet-trucks/sitemap.xml
+Sitemap: https://vishwakarmapallettrucks.in/sitemap.xml
