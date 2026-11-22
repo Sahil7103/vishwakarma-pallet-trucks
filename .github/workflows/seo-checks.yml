@@ -1,0 +1,11 @@
+name: SEO checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check crawlable pages and metadata
+        run: python3 scripts/check_seo.py

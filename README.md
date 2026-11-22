@@ -217,3 +217,13 @@ When transferring hosting: deploy a verified copy to the new provider, confirm a
 | 22 Nov 2026 | This operations README added. No live deployment success asserted by this documentation change. |
 
 **Maintenance rule:** Update this runbook whenever the registrar, hosting provider, DNS, form integration, repository structure or deployment procedure changes.
+
+## SEO guide and implementation
+
+- [Complete SEO guide in Word](docs/Vishwakarma-SEO-Guide.docx)
+- [Readable and editable guide source](docs/SEO-GUIDE.md)
+- [Page title and description map](docs/seo-page-map.json)
+
+The first SEO release updates head metadata and JSON-LD across all eight pages while preserving HTML bodies, image assets, styles and behaviour. LocalBusiness facts, verified product specifications, Google account setup and measurement follow-ups are tracked in the guide.
+
+Run `python3 scripts/check_seo.py` before publishing. For a release that promises no visual changes, also run `python3 scripts/check_seo.py --baseline <previous-commit>`. GitHub Actions runs the basic checks on pushes and pull requests. A passing check establishes local consistency, not indexing or a ranking guarantee.
