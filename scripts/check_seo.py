@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Dependency-free crawl and metadata checks. Optional --baseline verifies visual preservation."""
-import argparse,json,re,subprocess,sys
+import argparse,html,json,re,subprocess,sys
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urljoin,urlsplit,unquote
@@ -14,6 +14,7 @@ class Page(HTMLParser):
  def attrs(self,tag,**match):return [a for t,a in self.tags if t==tag and all(a.get(k)==v for k,v in match.items())]
 def run(baseline=None):
  errors=[];titles=set();descs=set();urls=set();count=0
+ page_map=json.loads((ROOT/"docs/seo-page-map.json").read_text())
  def check(ok,msg):
   if not ok:errors.append(msg)
  for p in sorted(ROOT.glob('**/index.html')):
@@ -28,6 +29,7 @@ def run(baseline=None):
   check(len(description)==1 and bool(description[0].get('content')),f'{rel}: description required')
   if description:
    desc=description[0].get('content');check(desc not in descs,f'{rel}: duplicate description');descs.add(desc)
+  check(route in page_map and title and [html.unescape(title[0]),description[0].get('content') if description else None]==page_map.get(route),f'{rel}: metadata differs from page map')
   canon=page.attrs('link',rel='canonical');check(len(canon)==1 and canon[0].get('href')==url,f'{rel}: canonical mismatch')
   og=page.attrs('meta',property='og:url');check(len(og)==1 and og[0].get('content')==url,f'{rel}: og:url mismatch')
   check(len(page.attrs('h1'))==1,f'{rel}: expected one h1')
@@ -39,7 +41,23 @@ def run(baseline=None):
    try:
     schema=json.loads(raw);graph=schema.get('@graph',[])
     check(any(n.get('@id')==url+'#webpage' for n in graph),f'{rel}: missing page entity')
+    ids={n.get('@id') for n in graph}
+    images={}
+    for a in page.attrs('img'):images.setdefault(urljoin(url,a['src']),set()).add(a.get('alt'))
     for n in graph:
+     if n.get('@type')=='ImageObject':
+      check(n.get('contentUrl') in images,f'{rel}: schema image not present on page')
+      check(n.get('caption') in images.get(n.get('contentUrl'),set()),f'{rel}: schema image caption differs from alt')
+     if n.get('@type') in ('WebPage','CollectionPage'):
+      for key in ('primaryImageOfPage','mainEntity','breadcrumb'):
+       if key in n:check(n[key].get('@id') in ids,f'{rel}: unresolved {key}')
+     if n.get('@type')=='ItemList':
+      items=n.get('itemListElement',[])
+      links={urljoin(url,a.get('href','')) for a in page.attrs('a')}
+      check(n.get('numberOfItems')==len(items) and len(items)>0,f'{rel}: catalogue count')
+      check([x.get('position') for x in items]==list(range(1,len(items)+1)),f'{rel}: catalogue positions')
+      check(all(x.get('item',{}).get('url') in links for x in items),f'{rel}: catalogue item missing visible link')
+      check(len({x.get('item',{}).get('url') for x in items})==len(items),f'{rel}: duplicate catalogue items')
      if n.get('@type')=='BreadcrumbList':
       items=n['itemListElement'];check([x['position'] for x in items]==list(range(1,len(items)+1)),f'{rel}: breadcrumb positions')
       check(all(x['item'] in {BASE,BASE+'products/',url} for x in items),f'{rel}: breadcrumb URL')
